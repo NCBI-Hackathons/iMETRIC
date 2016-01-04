@@ -1,3 +1,20 @@
+import mhcpredict.tools
+
+def predictPeptides(self, sequences, alleles=None, species=None, 
+                    methods=None, config=None, **kwarg):
+    
+    predictors = mhcpredict.tools.get_predictors(methods, config)
+    results = (pred.predictPeptides(sequences, alleles, species, **kwargs)
+        for pred in predictors)
+    # TODO: generate consensus table from results
+
+def predictProteins(self, sequence, lengths=None, alleles=None, species=None, 
+                    methods=None, config=None, **kwarg):
+    
+    predictors = mhcpredict.tools.get_predictors(methods, config)
+    results = (pred.predictProteins(sequences, lengths, alleles, species, **kwargs)
+        for pred in predictors)
+    # TODO: generate consensus table from results
 
 MIN_PEPTIDE_LENGTH = 8
 MAX_PEPTIDE_LENGTH = 15
@@ -9,6 +26,14 @@ class MHCPeptidePredictor(object):
         self.all_alleles = None
         self.all_species = None
         self.init(**kwargs)
+    
+    def predictPeptides(self, sequences, alleles=None, species=None, **kwarg):
+        """Predict multiple peptides. By default, this just calls predictPeptide
+        for each sequence, but subclasses may override to implement a more 
+        efficient batch method.
+        """
+        return list(self.predictPeptide(seq, alleles, species, **kwarg)
+            for seq in sequences)
     
     def predictPeptide(self, sequence, alleles=None, species=None, **kwarg):
         """Predict binding between a single peptide and one or more MHC alleles.
@@ -42,8 +67,15 @@ class MHCPeptidePredictor(object):
         
         self.getPeptidePredictions(sequence, alleles, species, **kwargs)
     
-    def predictProtein(self, sequence, lengths=None, 
-                       alleles=None, species=None, **kwarg):
+    def predictProteins(self, sequences, lengths=None, alleles=None, species=None, **kwarg):
+        """Predict multiple proteins. By default, this just calls predictProtein
+        for each sequence, but subclasses may override to implement a more 
+        efficient batch method.
+        """
+        return list(self.predictProtein(seq, lengths, alleles, species, **kwarg)
+            for seq in sequences)
+    
+    def predictProtein(self, sequence, lengths=None, alleles=None, species=None, **kwarg):
         """Predict binding between peptides within a protein sequence and one 
         or more MHC alleles. Each tool provides it's own method for deriving
         peptides from a protein; tools that do not provide such ability will
@@ -108,6 +140,12 @@ class MHCPeptidePredictor(object):
     
     def init(self, **kwargs):
         pass
+    
+    def getPeptidePredictions(sequence, alleles, species, **kwargs):
+        raise NotImplemented()
+    
+    def getProteinPredictions(sequence, lengths, alleles, species, **kwargs):
+        raise NotImplemented()
     
     def listMHCAlleles(self):
         raise NotImplemented()
