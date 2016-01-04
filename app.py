@@ -18,5 +18,19 @@ print 'running on port ' + str(port)
 def index():
     return render_template("index.html")
 
+
+
+
+
+
+# API RESOURCES BELOW 
+
+class ProteinQuery(Resource): 
+    def get(self, protein_sequence): 
+        return {protein_sequence: 'under construction'}
+
+api.add_resource(ProteinQuery, '/query/<string:protein_sequence')
+
+
 if __name__ == '__main__':
     app.run(port=port, debug=True)
