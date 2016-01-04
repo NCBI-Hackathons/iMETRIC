@@ -29,7 +29,7 @@ class ProteinQuery(Resource):
     def get(self, protein_sequence): 
         return {protein_sequence: 'under construction'}
 
-api.add_resource(ProteinQuery, '/query/<string:protein_sequence')
+api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
 
 if __name__ == '__main__':
