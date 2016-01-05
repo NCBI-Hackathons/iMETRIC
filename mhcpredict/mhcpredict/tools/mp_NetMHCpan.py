@@ -77,12 +77,13 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
             "pos", "allele", "peptide", "identity", "pos2", 
             "core", "1-log50k(aff)", "affinity", "rank"
         ]
-        df = df.drop(["identity", "pos2", "rank"], 1)
-        pd.to_numeric(df[:,"pos"], errors='coerce')
-        pd.to_numeric(df[:,"1-log50k(aff)"], errors='coerce')
-        pd.to_numeric(df[:,"affinity"], errors='coerce')
-        df = df.dropna()
-        df["rank"] = df["affinity"].rank(method="min", ascending=1)
+        
+        #df = df.drop(["identity", "pos2", "rank"], 1)
+        #pd.to_numeric(df[:,"pos"], errors='coerce')
+        #pd.to_numeric(df[:,"1-log50k(aff)"], errors='coerce')
+        #pd.to_numeric(df[:,"affinity"], errors='coerce')
+        #df = df.dropna()
+        #df["rank"] = df["affinity"].rank(method="min", ascending=1)
         return df
     
     def listMHCAlleles(self):
