@@ -70,6 +70,7 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
         df = df.drop(["pos", "identity", "rank"], 1)
         df = df.dropna()
         df["rank"] = df["affinity"].rank(method="min", ascending=1)
+        return df
     
     def listMHCAlleles(self):
         """Get available alleles"""
