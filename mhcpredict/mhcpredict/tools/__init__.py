@@ -16,7 +16,7 @@ def get_MHCImmunoPredictors(names=None, config=None):
 class ToolLoader(object):
     def __init__(self, prefix):
         self.prefix = prefix
-        self.all_MHCPeptide_modules = None
+        self.all_modules = None
     
     def get_predictors(self, names=None, config=None):
         """Create a predictor for each name given, or create instances
