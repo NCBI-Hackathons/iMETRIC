@@ -46,7 +46,7 @@ class MHCPeptidePredictor(object):
         sequences, alleles, species = self._validate_args(sequences, alleles, species,
             self.min_peptide_length, self.max_peptide_length)
         
-        self.getPeptidePredictions(sequences, alleles, species, **kwargs)
+        return self.getPeptidePredictions(sequences, alleles, species, **kwargs)
     
     def predictProteins(self, sequences, lengths=None, alleles=None, species=None, **kwarg):
         """Predict binding between peptides within a protein sequence and one 
@@ -81,7 +81,7 @@ class MHCPeptidePredictor(object):
                     raise Exception("All lengths must be between {0} and {1}".format(
                         self.min_peptide_length, self.max_peptide_length))
         
-        self.getProteinPredictions(sequences, lengths, alleles, species, **kwargs)
+        return self.getProteinPredictions(sequences, lengths, alleles, species, **kwargs)
     
     def _validate_args(self, sequences, alleles, species, min_seq_len=None, max_seq_len=None):
         if sequences is None or len(sequences) == 0:

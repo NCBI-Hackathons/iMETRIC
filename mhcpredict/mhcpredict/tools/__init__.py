@@ -76,6 +76,5 @@ class ToolLoader(object):
                     importlib.import_module("."+mod_name, package="mhcpredict.tools")
                 )
                 for mod_name in mod_names)
-            print self.all_MHCPeptide_modules
 
         return self.all_MHCPeptide_modules
