@@ -7,12 +7,16 @@ import sys
 import mhcpredict
 import mhcpredict.util
 
-def get_predictors(names=None, config=None):
-    return ToolLoader().get_predictors(names, config)
+def get_MHCPeptidePredictors(names=None, config=None):
+    return ToolLoader("mp").get_predictors(names, config)
+
+def get_MHCImmunoPredictors(names=None, config=None):
+    return ToolLoader("ep").get_predictors(names, config)
 
 class ToolLoader(object):
-    def __init__(self):
-        self.all_MHCPeptide_modules = None
+    def __init__(self, prefix):
+        self.prefix = prefix
+        self.all_modules = None
     
     def get_predictors(self, names=None, config=None):
         """Create a predictor for each name given, or create instances
@@ -28,7 +32,7 @@ class ToolLoader(object):
         if config is None:
             config = mhcpredict.util.DictConfig()
         
-        modules = self.get_MHCPeptide_modules()
+        modules = self.get_modules()
     
         if names is None:
             names = modules.keys()
@@ -46,8 +50,8 @@ class ToolLoader(object):
     
         return dict((name, create_predictor(name)) for name in names)
 
-    def get_MHCPeptide_modules(self):
-        if self.all_MHCPeptide_modules is None:
+    def get_modules(self):
+        if self.all_modules is None:
             
             mod_dir = os.path.join(
                 os.path.dirname(os.path.abspath(mhcpredict.__file__)), 
@@ -65,10 +69,12 @@ class ToolLoader(object):
                 
             mod_names = set(map(
                 lambda path: os.path.splitext(os.path.basename(path))[0], 
-                glob.glob(os.path.join(mod_dir, "mp_*.py*"))
+                glob.glob(os.path.join(mod_dir, "{}_*.py*".format(self.prefix)))
             ))
-            self.all_MHCPeptide_modules = dict(
-                (mod_name, importlib.import_module("."+mod_name, package="mhcpredict.tools"))
+            self.all_modules = dict((
+                    mod_name[(len(self.prefix)+1):], 
+                    importlib.import_module("."+mod_name, package="mhcpredict.tools")
+                )
                 for mod_name in mod_names)
 
-        return self.all_MHCPeptide_modules
+        return self.all_modules

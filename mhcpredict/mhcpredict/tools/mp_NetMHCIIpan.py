@@ -1,6 +1,7 @@
 from mhcpredict.predict import MHCPeptidePredictor
 from mhcpredict.util import create_temp_fasta, sort_by_length
 import os
+import re
 import subprocess
 
 def get_instance(config):
@@ -18,6 +19,9 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
         self.tempdir = kwargs.get("tempdir", None)
 
     def getPeptidePredictions(self, sequences, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         seq_lengths = sort_by_length(sequences)
         rows_list = []
         for seq_len, seqs in seq_lengths.items():
@@ -25,6 +29,9 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
         return self._prepare_DataFrame(rows_list)
     
     def getProteinPredictions(self, sequences, lengths, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         rows_list = self._predict(sequences, lengths, alleles, species)
         return self._prepare_DataFrame(rows_list)
     
@@ -58,7 +65,7 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
                 if len(row) == 9 and row[0] not in ignore:
                     return row
         
-        return filter(map(parse_row, output))
+        return filter(None, map(parse_row, output))
     
     def _prepare_DataFrame(self, rows_list):
         df = rbind(rows_list)
