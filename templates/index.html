@@ -10,7 +10,11 @@ jQuery(document).ready(function() {
     url += $('textarea#sequence').val()
     alert(url)
     jQuery.getJSON(url, {}, function(data) {
-      alert(data[$('textarea#sequence').val()]);
+      results = data[$('textarea#sequence').val()]
+      alert(results['iedb_mhci']);
+
+      //alert( obj.name === $('textarea#sequence').val() );
+      //alert(data[$('textarea#sequence').val()]);
     });
   });
 });
