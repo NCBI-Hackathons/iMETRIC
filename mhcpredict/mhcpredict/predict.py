@@ -88,23 +88,45 @@ class MHCPeptidePredictor(object):
             raise Exception("No sequences given")
         if isinstance(sequences, str):
             sequences = [sequences]
+        
+        valid_sequences = []
         for seq in sequences:
-            if ((min_seq_len is None or len(seq) < min_seq_len) and
-                    (max_seq_len is None or len(seq) > max_seq_len)):
-                raise Exception("Sequence length must be between {0} and {1}".format(
-                    min_seq_len or 0, max_seq_len or "Inf"))
+            if ((min_seq_len is None or len(seq) >= min_seq_len) and
+                    (max_seq_len is None or len(seq) <= max_seq_len)):
+                valid_sequences.append(seq)
+            else:
+                # TODO: warn about this
+                pass
         
+        all_alleles = self.getAllMHCAlleles()
         if alleles is None:
-            alleles = self.getAllMHCAlleles()
-        elif isinstance(alleles, str):
-            alleles = [alleles]
+            valid_alleles = all_alleles
+        else:
+            if isinstance(alleles, str):
+                alleles = [alleles]
+            
+            valid_alleles = set(alleles) & set(all_alleles)
+            invalid_alleles = set(alleles) - valid_alleles
+            if len(invalid_alleles) > 0:
+                # TODO: warn about this
+                pass
+            valid_alleles = list(valid_alleles)
         
+        all_species = self.getAllSpecies()
         if species is None:
-            species = self.getAllSpecies()
-        elif isinstance(species, str):
-            species = [species]
+            valid_species = all_species
+        else:
+            if isinstance(species, str):
+                species = [species]
+            
+            valid_species = set(species) & set(all_species)
+            invalid_species = set(species) - valid_species
+            if len(invalid_species) > 0:
+                # TODO: warn about this
+                pass
+            valid_species = list(valid_species)
 
-        return (sequences, alleles, species)
+        return (valid_sequences, valid_alleles, valid_species)
     
     def getAllMHCAlleles(self):
         """Enumerate all alleles supported by the predictor.

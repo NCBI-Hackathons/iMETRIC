@@ -21,6 +21,9 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         self.tempdir = kwargs.get("tempdir", None)
 
     def getPeptidePredictions(self, sequences, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         seq_lengths = sort_by_length(sequences)
         rows_list = []
         for seq_len, seqs in seq_lengths.items():
@@ -28,6 +31,9 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         return self._prepare_DataFrame(rows_list)
     
     def getProteinPredictions(self, sequences, lengths, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         rows_list = self._predict(sequences, lengths, alleles, species)
         return self._prepare_DataFrame(rows_list)
     
