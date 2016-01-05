@@ -2,6 +2,8 @@ import configparser
 import glob
 import importlib
 import os
+import sys
+
 import mhcpredict.util
 
 def get_predictors(names=None, config=None):

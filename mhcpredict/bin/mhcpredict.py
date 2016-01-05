@@ -7,7 +7,7 @@ import mhcpredict.util
 result = mhcpredict.predict.predictPeptides(
     "VIFRLMRTNFL", 
     alleles="HLA-DRB1*0101", 
-    config=mhcpredict.util.DictConfig(dict(NetMHCIIpan=dict(
+    config=mhcpredict.util.DictConfig(dict(NetMHCpan=dict(
         executable="/Users/didionjp/Downloads/netMHCIIpan-3.1/netMHCIIpan",
         tempdir=".")))
 )
