@@ -69,7 +69,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
                 if len(row) == 9 and row[0] not in ignore:
                     return row
         
-        return filter(map(parse_row, output))
+        return filter(None, map(parse_row, output))
     
     def _prepare_DataFrame(self, rows_list):
         df = rbind(rows_list)
