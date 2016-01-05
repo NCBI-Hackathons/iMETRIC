@@ -12,8 +12,8 @@ def create_temp_fasta(sequences, tempdir=None):
     with open(temp, "w") as out:
         for i, seq in enumerate(sequences):
             SeqIO.write(
-                SeqRecord(Seq(seq), id='temp{}'.format(i)), 
-                out, 'fasta')
+                SeqRecord(Seq(seq), id="temp{}".format(i), description=""), 
+                out, "fasta")
     return temp
 
 def sort_by_length(seq):

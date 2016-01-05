@@ -1,22 +1,31 @@
 {% extends "_base.html" %}
 
 {% block head %}
+<link rel="stylesheet" href="static/css/spinner.css"></link>
 <script src="static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 jQuery(document).ready(function() {
+
   $('.btn').click(function() {
     //alert($('textarea#sequence').val());
+    $('#submit-button').prop("disabled",true);
+    $('.sk-fading-circle').show();
     var url = 'query/';
-    url += $('textarea#sequence').val()
-    alert(url)
+    url += $('textarea#sequence').val();
+    //alert(url)
     jQuery.getJSON(url, {}, function(data) {
       results = data[$('textarea#sequence').val()]
-      alert(results['iedb_mhci']);
+      //alert(results['iedb_mhci']);
 
       //alert( obj.name === $('textarea#sequence').val() );
       //alert(data[$('textarea#sequence').val()]);
+      $('#submit-button').prop("disabled",false);
+      $('.sk-fading-circle').hide();
+      $('#results').append(results['iedb_mhci'])
     });
   });
+
+  $('.sk-fading-circle').hide();
 });
 </script>
 
@@ -40,7 +49,21 @@ jQuery(document).ready(function() {
   <button class="btn btn-default pull-right" id="submit-button" type="button">Submit</button>
 </div>
 <!-- Output -->
-<div class="container">
+<div class="container" id="results">
+  <div class="sk-fading-circle">
+    <div class="sk-circle1 sk-circle"></div>
+    <div class="sk-circle2 sk-circle"></div>
+    <div class="sk-circle3 sk-circle"></div>
+    <div class="sk-circle4 sk-circle"></div>
+    <div class="sk-circle5 sk-circle"></div>
+    <div class="sk-circle6 sk-circle"></div>
+    <div class="sk-circle7 sk-circle"></div>
+    <div class="sk-circle8 sk-circle"></div>
+    <div class="sk-circle9 sk-circle"></div>
+    <div class="sk-circle10 sk-circle"></div>
+    <div class="sk-circle11 sk-circle"></div>
+    <div class="sk-circle12 sk-circle"></div>
+  </div>
 </div>
 
 {% endblock %}

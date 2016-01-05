@@ -21,6 +21,9 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         self.tempdir = kwargs.get("tempdir", None)
 
     def getPeptidePredictions(self, sequences, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         seq_lengths = sort_by_length(sequences)
         rows_list = []
         for seq_len, seqs in seq_lengths.items():
@@ -28,6 +31,9 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         return self._prepare_DataFrame(rows_list)
     
     def getProteinPredictions(self, sequences, lengths, alleles, species):
+        if len(sequences) == 0 or len(alleles) == 0:
+            # TODO: warn
+            return None
         rows_list = self._predict(sequences, lengths, alleles, species)
         return self._prepare_DataFrame(rows_list)
     
@@ -35,13 +41,14 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         alleles = list(allele.split("-")[1].replace("*", "_") for allele in alleles)
         lengths = ",".join(map(str, lengths))
         seq_file = create_temp_fasta(sequences, self.tempdir)
-
+        print(seq_file)
         try:
             return list(self._execute(seq_file, lengths, allele)
                 for allele in alleles)
 
         finally:
-            os.remove(seq_file)
+            #os.remove(seq_file)
+            pass
         
     def _execute(self, seq_file, lengths_str, allele):
         cmd = [
@@ -51,7 +58,6 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
             "-f", seq_file,
             "-tdir", self.tempdir
         ]
-        print(cmd)
         output = subprocess.check_output(cmd)
         output = output.split("\n")[19:]
         ignore = set(("Protein","pos",""))
