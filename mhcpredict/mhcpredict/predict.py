@@ -3,7 +3,7 @@ import mhcpredict.tools
 def predictPeptides(sequences, alleles=None, species=None, 
                     methods=None, config=None, **kwargs):
     
-    predictors = mhcpredict.tools.get_predictors(methods, config)
+    predictors = mhcpredict.tools.get_MHCPeptidePredictors(methods, config)
     results = dict((name, pred.predictPeptides(sequences, alleles, species, **kwargs))
         for name, pred in predictors.items())
     return results
@@ -12,7 +12,7 @@ def predictPeptides(sequences, alleles=None, species=None,
 def predictProteins(sequences, lengths=None, alleles=None, species=None, 
                     methods=None, config=None, **kwarg):
     
-    predictors = mhcpredict.tools.get_predictors(methods, config)
+    predictors = mhcpredict.tools.get_MHCPeptidePredictors(methods, config)
     results = dict((name, pred.predictProteins(sequences, lengths, alleles, species, **kwargs))
         for name, pred in predictors.items())
     return results
@@ -147,3 +147,36 @@ class MHCPeptidePredictor(object):
         empty list by default, since some tools do not require species
         information."""
         return []
+
+def predictEpitopes(sequences, methods=None, config=None, **kwargs):
+    predictors = mhcpredict.tools.get_MHCImmunoPredictors(methods, config)
+    results = dict((name, pred.predictEpitopes(sequences, **kwargs))
+        for name, pred in predictors.items())
+    return results
+    # TODO: generate consensus table from results
+
+class MHCImmunoPredictor(object):
+    def predictEpitopes(self, sequences, **kwargs):
+        """Predict immunogenicity of one or more epitopes.
+        
+        Args:
+            sequences: The peptide amino acid sequences. May be of different lengths.
+            kwargs: Additional arguments that are passed through to subclasses.
+        
+        Returns:
+            A pandas DataFrame with the following columns:
+            TODO
+        """
+        sequences = self._validate_args(sequences)
+        self.getEpitopePredictions(sequences)
+    
+    def _validate_args(self, sequences, alleles, species, min_seq_len=None, max_seq_len=None):
+        if sequences is None or len(sequences) == 0:
+            raise Exception("No sequences given")
+        if isinstance(sequences, str):
+            sequences = [sequences]
+        return sequences
+                    
+    ## Internal methods to be implemented by subclasses ##
+    def getEpitopePredictions(self, sequences, **kwargs):
+        raise NotImplemented()

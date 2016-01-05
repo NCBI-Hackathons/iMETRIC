@@ -7,11 +7,15 @@ import sys
 import mhcpredict
 import mhcpredict.util
 
-def get_predictors(names=None, config=None):
-    return ToolLoader().get_predictors(names, config)
+def get_MHCPeptidePredictors(names=None, config=None):
+    return ToolLoader("mp").get_predictors(names, config)
+
+def get_MHCImmunoPredictors(names=None, config=None):
+    return ToolLoader("ep").get_predictors(names, config)
 
 class ToolLoader(object):
-    def __init__(self):
+    def __init__(self, prefix):
+        self.prefix = prefix
         self.all_MHCPeptide_modules = None
     
     def get_predictors(self, names=None, config=None):
@@ -65,7 +69,7 @@ class ToolLoader(object):
                 
             mod_names = set(map(
                 lambda path: os.path.splitext(os.path.basename(path))[0], 
-                glob.glob(os.path.join(mod_dir, "mp_*.py*"))
+                glob.glob(os.path.join(mod_dir, "{}_*.py*".format(self.prefix)))
             ))
             self.all_MHCPeptide_modules = dict(
                 (mod_name, importlib.import_module("."+mod_name, package="mhcpredict.tools"))
