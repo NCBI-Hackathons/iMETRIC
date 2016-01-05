@@ -1,7 +1,6 @@
 import configparser
 import glob
 import importlib
-import importlib.util
 import os
 import mhcpredict.util
 
@@ -47,6 +46,7 @@ class ToolLoader(object):
     def get_MHCPeptide_modules(self):
         if self.all_MHCPeptide_modules is None:
             if sys.version_info >= (3, 4):
+                import importlib.util
                 spec = importlib.util.find_spec("mhcpredict.tools")
                 mod_dir = spec.submodule_search_locations[0]
             
