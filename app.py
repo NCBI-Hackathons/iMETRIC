@@ -100,13 +100,6 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 
 class ProteinQuery(Resource): 
     def get(self, protein_sequence): 
-			print 'intercepting request! '
-			print 'request url: '
-			print request.url
-			print 'request headers: '
-			print request.headers 
-			print 'request data: '
-			print request.data 
 			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
 			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence) 
 			return {protein_sequence: {
