@@ -4,6 +4,7 @@ import importlib
 import os
 import sys
 
+import mhcpredict
 import mhcpredict.util
 
 def get_predictors(names=None, config=None):
@@ -47,14 +48,16 @@ class ToolLoader(object):
 
     def get_MHCPeptide_modules(self):
         if self.all_MHCPeptide_modules is None:
-            if sys.version_info >= (3, 4):
-                import importlib.util
-                spec = importlib.util.find_spec("mhcpredict.tools")
-                mod_dir = spec.submodule_search_locations[0]
+            mod_dir = os.path.join(os.path.abspath(mhcpredict.__file__), "tools")
+
+            #if sys.version_info >= (3, 4):
+            #    import importlib.util
+            #    spec = importlib.util.find_spec("mhcpredict.tools")
+            #    mod_dir = spec.submodule_search_locations[0]
             
-            elif sys.version_info < (3, 0):
-                import imp
-                file, mod_dir, description = imp.find_module("mhcpredict.tools")
+            #elif sys.version_info < (3, 0):
+            #    import imp
+            #    file, mod_dir, description = imp.find_module("tools", )
                 
             mod_names = set(map(
                 lambda path: os.path.splitext(os.path.basename(path))[0], 
