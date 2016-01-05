@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import mhcpredict.predict
-import mhcpredict.util
+import mhcpredict
 
 if __name__ == "__main__":
     result = mhcpredict.predict.predictPeptides(
@@ -14,8 +13,8 @@ if __name__ == "__main__":
     )
     result.to_csv("output.txt", sep="\t")
     
-import mhcpredict.predict
-import mhcpredict.util    
+import mhcpredict
+   
 result = mhcpredict.predict.predictPeptides(
     "VIFRLMRTNFL",
     alleles="HLA-A01:01",
