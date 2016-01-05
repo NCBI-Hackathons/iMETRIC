@@ -84,7 +84,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
     
     def listMHCAlleles(self):
         """Get available alleles"""
-        cmd = [self.executable, "-list"]
+        cmd = [self.executable, "-listMHC"]
         temp = subprocess.check_output(cmd)
         alleles = temp.split("\n")[34:]
         return alleles
