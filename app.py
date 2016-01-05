@@ -1,7 +1,48 @@
+#System Imports 
 import sys, os
-from flask import Flask
+import json
+import static
+import time
+import random
+from shutil import copyfile
+import operator
+import urllib2
+import itertools
+import subprocess
+import math 
+# from filechunkio import FileChunkIO 
+from celery import Celery
+from collections import defaultdict, OrderedDict
+import collections
+import requests
+#Flask Imports
+from werkzeug import secure_filename
+from flask import Flask, Blueprint, make_response, render_template, render_template_string, request, session, flash, redirect, url_for, jsonify, get_flashed_messages, send_from_directory
+from flask.ext.bcrypt import Bcrypt
+from flask.ext.login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
+from flask.ext.mail import Mail, Message
+from flask.ext.script import Manager
+from flask.ext.migrate import Migrate, MigrateCommand
+from flask_bootstrap import Bootstrap
+from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
+from flask_nav import Nav 
+from flask_nav.elements import Navbar, View, Subgroup, Link, Text, Separator
+from flask_sqlalchemy import SQLAlchemy
+from markupsafe import escape
+import wtforms
+from flask_wtf import Form
+import random
+import jinja2 
 from flask_restful import reqparse, abort, Api, Resource
-from flask import render_template
+
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Boolean
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import JSON, JSONB, ARRAY, BIT, VARCHAR, INTEGER, FLOAT, NUMERIC, OID, REAL, TEXT, TIME, TIMESTAMP, TSRANGE, UUID, NUMRANGE, DATERANGE
+from sqlalchemy.sql import select
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -11,8 +52,8 @@ try:
  port = int(os.environ['PORT'])
 except:
  port = 5001
+print 'will run on port ' + str(port)
 
-print 'running on port ' + str(port)
 
 @app.route('/')
 def index():
@@ -21,13 +62,51 @@ def index():
 
 
 
+# DATA-GATHERING FUNCTIONS 
+
+def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*01:01'): 
+	data = {
+	'sequence_text': protein_sequence, 
+	'length': length,
+	'method': method, 
+	'allele': allele,
+	}
+	url = 'http://tools-api.iedb.org/tools_api/mhci/'
+	response = requests.post(url, data=data) 
+	if response.ok: 
+		return response.text 
+	else: 
+		return 'Something went wrong'
+
+
+def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='HLA-DRB1*01:01'): 
+	data = {
+	'sequence_text': protein_sequence, 
+	'length': length,
+	'method': method, 
+	'allele': allele,
+	}
+	url = 'http://tools-api.iedb.org/tools_api/mhcii/'
+	response = requests.post(url, data=data) 
+	if response.ok: 
+		return response.text 
+	else: 
+		return 'Something went wrong'
+
+
 
 
 # API RESOURCES BELOW 
 
 class ProteinQuery(Resource): 
     def get(self, protein_sequence): 
-        return {protein_sequence: 'under construction'}
+			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
+			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence) 
+			return {protein_sequence: {
+			'iedb_mhci': iedb_mhci_response,
+			'iedb_mhcii': iedb_mhcii_response,
+			}
+			}
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
