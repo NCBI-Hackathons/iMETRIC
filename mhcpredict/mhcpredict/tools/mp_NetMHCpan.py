@@ -31,8 +31,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         results = []
         for seq_len, seqs in seq_lengths.items():
             results.extend(self._predict(seqs, [seq_len], alleles, species))
-        return results
-        #return self._prepare_DataFrame(list(result[0] for result in results))
+        return self._prepare_DataFrame(list(result[0] for result in results))
     
     def getProteinPredictions(self, sequences, lengths, alleles, species):
         if len(sequences) == 0 or len(alleles) == 0:
@@ -89,7 +88,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         
         return (
             list(row[0:7] for row in
-                csv.reader(rows, skipinitialspace=True)),
+                csv.reader(rows, delimiter=" ", skipinitialspace=True)),
             accuracies, 
             summaries
         )
