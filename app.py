@@ -1,4 +1,4 @@
-#System Imports 
+#System Imports
 import sys, os
 import json
 import static
@@ -9,8 +9,8 @@ import operator
 import urllib2
 import itertools
 import subprocess
-import math 
-# from filechunkio import FileChunkIO 
+import math
+# from filechunkio import FileChunkIO
 from celery import Celery
 from collections import defaultdict, OrderedDict
 import collections
@@ -25,14 +25,14 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask_bootstrap import Bootstrap
 from flask_bootstrap import __version__ as FLASK_BOOTSTRAP_VERSION
-from flask_nav import Nav 
+from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup, Link, Text, Separator
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape
 import wtforms
 from flask_wtf import Form
 import random
-import jinja2 
+import jinja2
 from flask_restful import reqparse, abort, Api, Resource
 
 from sqlalchemy import create_engine
@@ -42,7 +42,7 @@ from sqlalchemy.dialects.postgresql import JSON, JSONB, ARRAY, BIT, VARCHAR, INT
 from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-
+from mhcpredict import predict
 
 app = Flask(__name__)
 api = Api(app)
@@ -62,46 +62,46 @@ def index():
 
 
 
-# DATA-GATHERING FUNCTIONS 
+# DATA-GATHERING FUNCTIONS
 
-def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*01:01'): 
+def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*01:01'):
 	data = {
-	'sequence_text': protein_sequence, 
+	'sequence_text': protein_sequence,
 	'length': length,
-	'method': method, 
+	'method': method,
 	'allele': allele,
 	}
 	url = 'http://tools-api.iedb.org/tools_api/mhci/'
-	response = requests.post(url, data=data) 
-	if response.ok: 
-		return response.text 
-	else: 
+	response = requests.post(url, data=data)
+	if response.ok:
+		return response.text
+	else:
 		return 'Something went wrong'
 
 
-def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='HLA-DRB1*01:01'): 
+def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='HLA-DRB1*01:01'):
 	data = {
-	'sequence_text': protein_sequence, 
+	'sequence_text': protein_sequence,
 	'length': length,
-	'method': method, 
+	'method': method,
 	'allele': allele,
 	}
 	url = 'http://tools-api.iedb.org/tools_api/mhcii/'
-	response = requests.post(url, data=data) 
-	if response.ok: 
-		return response.text 
-	else: 
+	response = requests.post(url, data=data)
+	if response.ok:
+		return response.text
+	else:
 		return 'Something went wrong'
 
 
 
 
-# API RESOURCES BELOW 
+# API RESOURCES BELOW
 
-class ProteinQuery(Resource): 
-    def get(self, protein_sequence): 
+class ProteinQuery(Resource):
+    def get(self, protein_sequence):
 			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
-			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence) 
+			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
 			return {protein_sequence: {
 			'iedb_mhci': iedb_mhci_response,
 			'iedb_mhcii': iedb_mhcii_response,
