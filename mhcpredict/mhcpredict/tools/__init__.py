@@ -51,7 +51,7 @@ class ToolLoader(object):
         return dict((name, create_predictor(name)) for name in names)
 
     def get_modules(self):
-        if self.all_MHCPeptide_modules is None:
+        if self.all_modules is None:
             
             mod_dir = os.path.join(
                 os.path.dirname(os.path.abspath(mhcpredict.__file__)), 
@@ -71,10 +71,10 @@ class ToolLoader(object):
                 lambda path: os.path.splitext(os.path.basename(path))[0], 
                 glob.glob(os.path.join(mod_dir, "{}_*.py*".format(self.prefix)))
             ))
-            self.all_MHCPeptide_modules = dict((
+            self.all_modules = dict((
                     mod_name[(len(self.prefix)+1):], 
                     importlib.import_module("."+mod_name, package="mhcpredict.tools")
                 )
                 for mod_name in mod_names)
 
-        return self.all_MHCPeptide_modules
+        return self.all_modules
