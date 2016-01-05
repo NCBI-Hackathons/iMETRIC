@@ -28,17 +28,17 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
             # TODO: warn
             return None
         seq_lengths = sort_by_length(sequences)
-        rows_list = []
+        results = []
         for seq_len, seqs in seq_lengths.items():
-            rows_list.extend(self._predict(seqs, [seq_len], alleles, species))
-        return self._prepare_DataFrame(rows_list)
+            results.extend(self._predict(seqs, [seq_len], alleles, species))
+        return self._prepare_DataFrame(list(result[0] for result in results))
     
     def getProteinPredictions(self, sequences, lengths, alleles, species):
         if len(sequences) == 0 or len(alleles) == 0:
             # TODO: warn
             return None
         results = self._predict(sequences, lengths, alleles, species)
-        return self._prepare_DataFrame(result[0] for result in results)
+        return self._prepare_DataFrame(list(result[0] for result in results))
     
     def _predict(self, sequences, lengths, alleles, species):
         alleles = list(allele.replace("*", "_") for allele in alleles)
