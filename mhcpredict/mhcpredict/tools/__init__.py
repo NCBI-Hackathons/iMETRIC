@@ -46,8 +46,14 @@ class ToolLoader(object):
 
     def get_MHCPeptide_modules(self):
         if self.all_MHCPeptide_modules is None:
-            spec = importlib.util.find_spec("mhcpredict.tools")
-            mod_dir = spec.submodule_search_locations[0]
+            if sys.version_info >= (3, 4):
+                spec = importlib.util.find_spec("mhcpredict.tools")
+                mod_dir = spec.submodule_search_locations[0]
+            
+            elif sys.version_info < (3, 0):
+                import imp
+                file, mod_dir, description = imp.find_module("mhcpredict.tools")
+                
             mod_names = set(map(
                 lambda path: os.path.splitext(os.path.basename(path))[0], 
                 glob.glob(os.path.join(mod_dir, "mp_*.py*"))
