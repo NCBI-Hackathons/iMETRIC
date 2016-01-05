@@ -7,8 +7,10 @@ jQuery(document).ready(function() {
   $('.btn').click(function() {
     //alert($('textarea#sequence').val());
     var url = 'query/';
-    jQuery.getJSON(url += $('textarea#sequence'), {}, function(data) {
-      alert(data);
+    url += $('textarea#sequence').val()
+    alert(url)
+    jQuery.getJSON(url, {}, function(data) {
+      alert(data[$('textarea#sequence').val()]);
     });
   });
 });
