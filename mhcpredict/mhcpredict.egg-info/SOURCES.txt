@@ -9,3 +9,5 @@ mhcpredict.egg-info/dependency_links.txt
 mhcpredict.egg-info/top_level.txt
 mhcpredict/tools/__init__.py
 mhcpredict/tools/mp_NetMHCIIPan.py
+mhcpredict/tools/mp_NetMHCIIpan.py
+mhcpredict/tools/mp_NetMHCpan.py
