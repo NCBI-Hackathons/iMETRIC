@@ -74,11 +74,13 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
     def _prepare_DataFrame(self, rows_list):
         df = rbind(rows_list)
         df.colnames = [
-            "pos", "allele", "peptide", "identity", "pos", 
+            "pos", "allele", "peptide", "identity", "pos2", 
             "core", "1-log50k(aff)", "affinity", "rank"
         ]
-        df = df.convert_objects(convert_numeric=True)
-        df = df.drop(["pos", "identity", "rank"], 1)
+        df = df.drop(["identity", "pos2", "rank"], 1)
+        pd.to_numeric(df[:,"pos"], errors='coerce')
+        pd.to_numeric(df[:,"1-log50k(aff)"], errors='coerce')
+        pd.to_numeric(df[:,"affinity"], errors='coerce')
         df = df.dropna()
         df["rank"] = df["affinity"].rank(method="min", ascending=1)
         return df
