@@ -1,6 +1,7 @@
 from mhcpredict.predict import MHCPeptidePredictor
 from mhcpredict.util import create_temp_fasta, sort_by_length
 import os
+import re
 import subprocess
 
 def get_instance(config):

@@ -21,5 +21,6 @@ result = mhcpredict.predict.predictPeptides(
     alleles="HLA-A01:01",
     methods=["NetMHCpan"],
     config=mhcpredict.util.DictConfig(dict(NetMHCpan=dict(
-        executable="/home/ubuntu/software/netMHCpan-2.8/Linux_x86_64/bin/netMHCpan",tempdir=".")))
+        executable="/home/ubuntu/software/netMHCpan-2.8/Linux_x86_64/bin/netMHCpan",
+        tempdir="/home/ubuntu/software/Epitopes_from_TCRs/mhcpredict")))
 )
