@@ -79,13 +79,34 @@ def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*
 		return 'Something went wrong'
 
 
+def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='HLA-DRB1*01:01'): 
+	data = {
+	'sequence_text': protein_sequence, 
+	'length': length,
+	'method': method, 
+	'allele': allele,
+	}
+	url = 'http://tools-api.iedb.org/tools_api/mhcii/'
+	response = requests.post(url, data=data) 
+	if response.ok: 
+		return response.text 
+	else: 
+		return 'Something went wrong'
+
+
+
 
 # API RESOURCES BELOW 
 
 class ProteinQuery(Resource): 
     def get(self, protein_sequence): 
-			response = post_to_iedb_mhci(protein_sequence)
-			return {protein_sequence: response}
+			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
+			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence) 
+			return {protein_sequence: {
+			'iedb_mhci': iedb_mhci_response,
+			'iedb_mhcii': iedb_mhcii_response,
+			}
+			}
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
