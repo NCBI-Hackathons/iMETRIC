@@ -42,6 +42,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
 
         finally:
             #os.remove(seq_file)
+            pass
         
     def _execute(self, seq_file, lengths_str, allele):
         cmd = [
