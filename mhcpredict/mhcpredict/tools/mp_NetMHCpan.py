@@ -2,7 +2,7 @@
 # this and mp_NetMHCIIPan.py to a shared base class
 
 from mhcpredict.predict import MHCPeptidePredictor
-from mhcpredict.util import create_temp_fasta, sort_by_length
+from mhcpredict.util import create_temp_fasta, sort_by_length, rbind
 import os
 import re
 import subprocess
