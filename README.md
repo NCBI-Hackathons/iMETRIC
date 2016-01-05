@@ -1,5 +1,5 @@
 # Epitopes_from_TCRs
-Automated combinatorial epitope analysis from TCR clones
+Web based immunogenecity prediction resource
 
 
 The Immunoresponse METa pRedicTICion server 
