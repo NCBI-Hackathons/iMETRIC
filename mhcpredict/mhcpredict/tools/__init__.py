@@ -32,7 +32,7 @@ class ToolLoader(object):
         if config is None:
             config = mhcpredict.util.DictConfig()
         
-        modules = self.get_MHCPeptide_modules()
+        modules = self.get_modules()
     
         if names is None:
             names = modules.keys()
@@ -50,7 +50,7 @@ class ToolLoader(object):
     
         return dict((name, create_predictor(name)) for name in names)
 
-    def get_MHCPeptide_modules(self):
+    def get_modules(self):
         if self.all_MHCPeptide_modules is None:
             
             mod_dir = os.path.join(
@@ -72,9 +72,10 @@ class ToolLoader(object):
                 glob.glob(os.path.join(mod_dir, "{}_*.py*".format(self.prefix)))
             ))
             self.all_MHCPeptide_modules = dict((
-                    mod_name[len(self.prefix):], 
+                    mod_name[(len(self.prefix)+1):], 
                     importlib.import_module("."+mod_name, package="mhcpredict.tools")
                 )
                 for mod_name in mod_names)
+            print self.all_MHCPeptide_modules
 
         return self.all_MHCPeptide_modules
