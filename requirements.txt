@@ -1,3 +1,4 @@
+-e git+https://github.com/jdidion/imetric-api.git#egg=imetric-api
 alabaster==0.7.7
 alembic==0.8.4
 amqp==1.4.8
