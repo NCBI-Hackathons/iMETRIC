@@ -1,5 +1,22 @@
 {% extends "_base.html" %}
 
+{% block head %}
+<script src="static/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+  $('.btn').click(function() {
+    //alert($('textarea#sequence').val());
+    var url = 'query/';
+    jQuery.getJSON(url += $('textarea#sequence'), {}, function(data) {
+      alert(data);
+    });
+  });
+});
+</script>
+
+{% endblock %}
+
+
 {% block body %}
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -11,9 +28,10 @@
 </nav>
 <!-- Input -->
 <div class="container">
-  <textarea class="form-control" rows="5" id="comment" placeholder="Protein Sequence"></textarea>
+
+  <textarea class="form-control" rows="5" id="sequence" placeholder="Protein Sequence"></textarea>
   <br>
-  <button class="btn btn-default pull-right" type="button">Go!</button>
+  <button class="btn btn-default pull-right" id="submit-button" type="button">Submit</button>
 </div>
 <!-- Output -->
 <div class="container">
