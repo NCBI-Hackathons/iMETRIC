@@ -6,26 +6,33 @@
 <script type="text/javascript">
 jQuery(document).ready(function() {
 
-  $('.btn').click(function() {
-    //alert($('textarea#sequence').val());
+  $('#submit-button').click(function() {
     $('#submit-button').prop("disabled",true);
     $('.sk-fading-circle').show();
+    $('#results').hide();
+    $('.panel-body').contents().remove();
     var url = 'query/';
     url += $('textarea#sequence').val();
     //alert(url)
     jQuery.getJSON(url, {}, function(data) {
-      results = data[$('textarea#sequence').val()]
+      results = data[$('textarea#sequence').val()];
+      $('.panel-body').append(results['iedb_mhci']);
       //alert(results['iedb_mhci']);
 
       //alert( obj.name === $('textarea#sequence').val() );
       //alert(data[$('textarea#sequence').val()]);
       $('#submit-button').prop("disabled",false);
       $('.sk-fading-circle').hide();
-      $('#results').append(results['iedb_mhci'])
+      $('#results').fadeIn();
     });
   });
 
+  $('#test-data-button').click(function() {
+    $('textarea#sequence').val('MAAAGSRKRRLAELTVDEFLASGFDSESESESENSPQAETREAREAARSPDKPGGSPSAS');
+  });
+
   $('.sk-fading-circle').hide();
+  $('#results').hide();
 });
 </script>
 
@@ -37,7 +44,7 @@ jQuery(document).ready(function() {
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">iMetric Prototype</a>
+      <a class="navbar-brand" href="#">iMetric</a>
     </div>
   </div>
 </nav>
@@ -46,23 +53,36 @@ jQuery(document).ready(function() {
 
   <textarea class="form-control" rows="5" id="sequence" placeholder="Protein Sequence"></textarea>
   <br>
-  <button class="btn btn-default pull-right" id="submit-button" type="button">Submit</button>
+  <button class="btn btn-info pull-left" id="test-data-button" type="button">
+    <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+    Test Data
+  </button>
+  <button class="btn btn-success pull-right" id="submit-button" type="button">
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+    Submit
+  </button>
+</div>
+<br>
+<div class="sk-fading-circle">
+  <div class="sk-circle1 sk-circle"></div>
+  <div class="sk-circle2 sk-circle"></div>
+  <div class="sk-circle3 sk-circle"></div>
+  <div class="sk-circle4 sk-circle"></div>
+  <div class="sk-circle5 sk-circle"></div>
+  <div class="sk-circle6 sk-circle"></div>
+  <div class="sk-circle7 sk-circle"></div>
+  <div class="sk-circle8 sk-circle"></div>
+  <div class="sk-circle9 sk-circle"></div>
+  <div class="sk-circle10 sk-circle"></div>
+  <div class="sk-circle11 sk-circle"></div>
+  <div class="sk-circle12 sk-circle"></div>
 </div>
 <!-- Output -->
 <div class="container" id="results">
-  <div class="sk-fading-circle">
-    <div class="sk-circle1 sk-circle"></div>
-    <div class="sk-circle2 sk-circle"></div>
-    <div class="sk-circle3 sk-circle"></div>
-    <div class="sk-circle4 sk-circle"></div>
-    <div class="sk-circle5 sk-circle"></div>
-    <div class="sk-circle6 sk-circle"></div>
-    <div class="sk-circle7 sk-circle"></div>
-    <div class="sk-circle8 sk-circle"></div>
-    <div class="sk-circle9 sk-circle"></div>
-    <div class="sk-circle10 sk-circle"></div>
-    <div class="sk-circle11 sk-circle"></div>
-    <div class="sk-circle12 sk-circle"></div>
+  <div class="panel panel-primary">
+    <div class="panel-heading">Output</div>
+    <div class="panel-body">
+    </div>
   </div>
 </div>
 
