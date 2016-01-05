@@ -35,13 +35,13 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         alleles = list(allele.split("-")[1].replace("*", "_") for allele in alleles)
         lengths = ",".join(map(str, lengths))
         seq_file = create_temp_fasta(sequences, self.tempdir)
-
+        print(seq_file)
         try:
             return list(self._execute(seq_file, lengths, allele)
                 for allele in alleles)
 
         finally:
-            os.remove(seq_file)
+            #os.remove(seq_file)
         
     def _execute(self, seq_file, lengths_str, allele):
         cmd = [
@@ -51,7 +51,6 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
             "-f", seq_file,
             "-tdir", self.tempdir
         ]
-        print(cmd)
         output = subprocess.check_output(cmd)
         output = output.split("\n")[19:]
         ignore = set(("Protein","pos",""))
