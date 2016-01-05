@@ -38,7 +38,7 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
         return self._prepare_DataFrame(rows_list)
     
     def _predict(self, sequences, lengths, alleles, species):
-        alleles = list(allele.split("-")[1].replace("*", "_") for allele in alleles)
+        alleles = list(allele.replace("*", "_") for allele in alleles)
         lengths = ",".join(map(str, lengths))
         seq_file = create_temp_fasta(sequences, self.tempdir)
         print(seq_file)
