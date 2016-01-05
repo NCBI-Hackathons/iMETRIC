@@ -1,45 +1,39 @@
 import mhcpredict.tools
 
-def predictPeptides(self, sequences, alleles=None, species=None, 
+def predictPeptides(sequences, alleles=None, species=None, 
+                    methods=None, config=None, **kwargs):
+    
+    predictors = mhcpredict.tools.get_predictors(methods, config)
+    results = dict((name, pred.predictPeptides(sequences, alleles, species, **kwargs))
+        for name, pred in predictors.items())
+    return results
+    # TODO: generate consensus table from results
+
+def predictProteins(sequences, lengths=None, alleles=None, species=None, 
                     methods=None, config=None, **kwarg):
     
     predictors = mhcpredict.tools.get_predictors(methods, config)
-    results = (pred.predictPeptides(sequences, alleles, species, **kwargs)
-        for pred in predictors)
+    results = dict((name, pred.predictProteins(sequences, lengths, alleles, species, **kwargs))
+        for name, pred in predictors.items())
+    return results
     # TODO: generate consensus table from results
-
-def predictProteins(self, sequence, lengths=None, alleles=None, species=None, 
-                    methods=None, config=None, **kwarg):
-    
-    predictors = mhcpredict.tools.get_predictors(methods, config)
-    results = (pred.predictProteins(sequences, lengths, alleles, species, **kwargs)
-        for pred in predictors)
-    # TODO: generate consensus table from results
-
-MIN_PEPTIDE_LENGTH = 8
-MAX_PEPTIDE_LENGTH = 15
 
 class MHCPeptidePredictor(object):
     """Base class for tools that predict MHC:peptide binding strength.
     """
     def __init__(self, **kwargs):
+        # set defaults that can be over-ridden by subclass init()
         self.all_alleles = None
         self.all_species = None
+        self.min_peptide_length = 8
+        self.max_peptide_length = 15
         self.init(**kwargs)
     
     def predictPeptides(self, sequences, alleles=None, species=None, **kwarg):
-        """Predict multiple peptides. By default, this just calls predictPeptide
-        for each sequence, but subclasses may override to implement a more 
-        efficient batch method.
-        """
-        return list(self.predictPeptide(seq, alleles, species, **kwarg)
-            for seq in sequences)
-    
-    def predictPeptide(self, sequence, alleles=None, species=None, **kwarg):
-        """Predict binding between a single peptide and one or more MHC alleles.
+        """Predict binding between one or more peptide and one or more MHC alleles.
         
         Args:
-            peptide: The peptide amino acid sequence.
+            peptide: The peptide amino acid sequences. May be of different lengths.
             alleles: List of MHC alleles, or None if all alleles should be queried.
             species: Species name, or None if all species should be queried.
                      TODO: what to use for species names?
@@ -49,40 +43,19 @@ class MHCPeptidePredictor(object):
             A pandas DataFrame with the following columns:
             TODO
         """
-        if (sequence is None or 
-                len(sequence) < MIN_PEPTIDE_LENGTH or 
-                len(sequence) > MAX_PEPTIDE_LENGTH):
-            raise Exception("Peptide length must be between {0} and {1}".format(
-                MIN_PEPTIDE_LENGTH, MAX_PEPTIDE_LENGTH))
+        sequences, alleles, species = self._validate_args(sequences, alleles, species,
+            self.min_peptide_length, self.max_peptide_length)
         
-        if alleles is None:
-            alleles = self.getAllMHCAlleles()
-        if isinstance(alleles, str):
-            alleles = [alleles]
-        
-        if species is None:
-            species = self.getAllSpecies()
-        if isinstance(species, str):
-            species = [species]
-        
-        self.getPeptidePredictions(sequence, alleles, species, **kwargs)
+        self.getPeptidePredictions(sequences, alleles, species, **kwargs)
     
     def predictProteins(self, sequences, lengths=None, alleles=None, species=None, **kwarg):
-        """Predict multiple proteins. By default, this just calls predictProtein
-        for each sequence, but subclasses may override to implement a more 
-        efficient batch method.
-        """
-        return list(self.predictProtein(seq, lengths, alleles, species, **kwarg)
-            for seq in sequences)
-    
-    def predictProtein(self, sequence, lengths=None, alleles=None, species=None, **kwarg):
         """Predict binding between peptides within a protein sequence and one 
         or more MHC alleles. Each tool provides it's own method for deriving
         peptides from a protein; tools that do not provide such ability will
         raise an Exception.
         
         Args:
-            sequence: The protein amino acid sequence.
+            sequence: The protein amino acid sequences.
             lengths: List of peptide lengths for which to make prediction.
             alleles: List of MHC alleles, or None if all alleles should be queried.
             species: Species name, or None if all species should be queried.
@@ -93,26 +66,45 @@ class MHCPeptidePredictor(object):
             A pandas DataFrame with the following columns:
             TODO
         """
-        if sequence is None or len(sequence) < MIN_PEPTIDE_LENGTH:
-            raise Exception("Peptide length must be between {0} and {1}".format(
-                MIN_PEPTIDE_LENGTH, MAX_PEPTIDE_LENGTH))
+        sequences, alleles, species = self._validate_args(sequences, alleles, species,
+            self.min_peptide_length)
+        
+        if lengths is None:
+            lengths = range(self.min_peptide_length, self.max_peptide_length)
+        
+        else:
+            if isinstance(lengths, int):
+                lengths = [lengths]
             
+            for l in lengths:
+                if l < self.min_peptide_length or l > self.max_peptide_length:
+                    raise Exception("All lengths must be between {0} and {1}".format(
+                        self.min_peptide_length, self.max_peptide_length))
+        
+        self.getProteinPredictions(sequences, lengths, alleles, species, **kwargs)
+    
+    def _validate_args(self, sequences, alleles, species, min_seq_len=None, max_seq_len=None):
+        if sequences is None or len(sequences == 0):
+            raise Exception("No sequences given")
+        if isinstance(sequences, str):
+            sequences = [sequences]
+        for seq in sequences:
+            if ((min_seq_len is None or len(seq) < min_seq_len) and
+                    (max_seq_len is Noen or len(seq) > max_seq_len)):
+                raise Exception("Sequence length must be between {0} and {1}".format(
+                    min_seq_len or 0, max_seq_len or "Inf"))
+        
         if alleles is None:
             alleles = self.getAllMHCAlleles()
-        if isinstance(alleles, str):
+        elif isinstance(alleles, str):
             alleles = [alleles]
         
         if species is None:
             species = self.getAllSpecies()
-        if isinstance(species, str):
+        elif isinstance(species, str):
             species = [species]
         
-        if lengths is None:
-            lengths = range(8, 15)
-        elif isinstance(lengths, int):
-            lengths = [lengths]
-        
-        self.getProteinPredictions(sequence, lengths, alleles, species, **kwargs)
+        return (sequences, alleles, species)
     
     def getAllMHCAlleles(self):
         """Enumerate all alleles supported by the predictor.
@@ -141,14 +133,17 @@ class MHCPeptidePredictor(object):
     def init(self, **kwargs):
         pass
     
-    def getPeptidePredictions(sequence, alleles, species, **kwargs):
+    def getPeptidePredictions(sequences, alleles, species, **kwargs):
         raise NotImplemented()
     
-    def getProteinPredictions(sequence, lengths, alleles, species, **kwargs):
+    def getProteinPredictions(sequences, lengths, alleles, species, **kwargs):
         raise NotImplemented()
     
     def listMHCAlleles(self):
         raise NotImplemented()
     
     def listSpecies(self):
-        raise NotImplemented()
+        """List all species supported by the predictor. Returns an
+        empty list by default, since some tools do not require species
+        information."""
+        return []
