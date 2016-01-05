@@ -1,3 +1,6 @@
+# TODO: refactor to move code that is common between
+# this and mp_NetMHCIIPan.py to a shared base class
+
 from mhcpredict.predict import MHCPeptidePredictor
 from mhcpredict.util import create_temp_fasta, sort_by_length
 import os
@@ -5,16 +8,16 @@ import subprocess
 
 def get_instance(config):
     #if IEDB locally installed
-    return LocalNetMHCIIPanPredictor(**config.get_section("NetMHCIIpan"))
+    return LocalNetMHCPanPredictor(**config.get_section("NetMHCIIpan"))
     #else
     #   return WebNetMHCIIPanPredictor(config)
 
-class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
+class LocalNetMHCPanPredictor(MHCPeptidePredictor):
     """MHCPeptidePredictor that calls a locally installed 
-    netMHCIIpan instance."""
+    netMHCpan instance."""
     
     def init(self, **kwargs):
-        self.executable = kwargs.get("executable", "netMHCIIpan")
+        self.executable = kwargs.get("executable", "netMHCpan")
         self.tempdir = kwargs.get("tempdir", None)
 
     def getPeptidePredictions(self, sequences, alleles, species):
@@ -43,7 +46,7 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
     def _execute(self, seq_file, lengths_str, allele):
         cmd = [
             self.executable, 
-            "-length", lengths_str, 
+            "-l", lengths_str, 
             "-a", allele, 
             "-f", seq_file,
             "-tdir", self.tempdir
