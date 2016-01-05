@@ -1,0 +1,42 @@
+IEDB data import 
+
+
+import pandas as pd
+from sqlalchemy import create_engine
+import psycopg2
+engine = create_engine('postgres://ouzfrzjjgzgfbs:1tcfWMRDiCm1ajQDOfzQrtrDOQ@ec2-54-83-55-214.compute-1.amazonaws.com:5432/de1vvmoa7jrvci')
+
+df = pd.DataFrame({'A': [1,2,3], 'B': ['a', 'b', 'c']})
+df.to_sql('test', engine) 
+
+
+antigen_full_v3.csv  epitope_full_v3.csv  reference_full_v3.csv
+bcell_full_v3.csv    mhc_ligand_full.csv  tcell_full_v3.csv
+
+
+
+
+df = pd.read_csv('bcell_full_v3.csv', low_memory=False, encoding='utf-8') 
+df.to_sql('bcells', engine)
+
+df = pd.read_csv('tcell_full_v3.csv', low_memory=False) 
+df.to_sql('tcells', engine)
+
+
+
+df = pd.read_csv('epitope_full_v3.csv', low_memory=False) 
+df.to_sql('epitopes', engine)
+
+df = pd.read_csv('reference_full_v3.csv', low_memory=False) 
+df.to_sql('references', engine)
+
+
+
+
+
+df = pd.read_csv('mhc_ligand_full.csv', low_memory=False) 
+df.to_sql('mhc_ligands', engine)
+
+
+
+

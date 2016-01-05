@@ -14,7 +14,7 @@ import math
 from celery import Celery
 from collections import defaultdict, OrderedDict
 import collections
-
+import requests
 #Flask Imports
 from werkzeug import secure_filename
 from flask import Flask, Blueprint, make_response, render_template, render_template_string, request, session, flash, redirect, url_for, jsonify, get_flashed_messages, send_from_directory
@@ -52,8 +52,8 @@ try:
  port = int(os.environ['PORT'])
 except:
  port = 5001
+print 'will run on port ' + str(port)
 
-print 'running on port ' + str(port)
 
 @app.route('/')
 def index():
@@ -62,11 +62,30 @@ def index():
 
 
 
+# DATA-GATHERING FUNCTIONS 
+
+def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*01:01'): 
+	data = {
+	'sequence_text': protein_sequence, 
+	'length': length,
+	'method': method, 
+	'allele': allele,
+	}
+	url = 'http://tools-api.iedb.org/tools_api/mhci/'
+	response = requests.post(url, data=data) 
+	if response.ok: 
+		return response.text 
+	else: 
+		return 'Something went wrong'
+
+
+
 # API RESOURCES BELOW 
 
 class ProteinQuery(Resource): 
     def get(self, protein_sequence): 
-        return {protein_sequence: 'under construction'}
+			response = post_to_iedb_mhci(protein_sequence)
+			return {protein_sequence: response}
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
