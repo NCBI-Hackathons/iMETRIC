@@ -8,7 +8,7 @@ import subprocess
 
 def get_instance(config):
     #if IEDB locally installed
-    return LocalNetMHCPanPredictor(**config.get_section("NetMHCIIpan"))
+    return LocalNetMHCPanPredictor(**config.get_section("NetMHCpan"))
     #else
     #   return WebNetMHCIIPanPredictor(config)
 
@@ -51,7 +51,6 @@ class LocalNetMHCPanPredictor(MHCPeptidePredictor):
             "-f", seq_file,
             "-tdir", self.tempdir
         ]
-        print(" ".join(str(c) for c in cmd))
         output = subprocess.check_output(cmd)
         output = output.split("\n")[19:]
         ignore = set(("Protein","pos",""))

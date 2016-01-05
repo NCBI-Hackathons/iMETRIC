@@ -48,7 +48,6 @@ class LocalNetMHCIIPanPredictor(MHCPeptidePredictor):
             "-f", seq_file,
             "-tdir", self.tempdir
         ]
-        print(" ".join(str(c) for c in cmd))
         output = subprocess.check_output(cmd)
         output = output.split("\n")[19:]
         ignore = set(("Protein","pos",""))
