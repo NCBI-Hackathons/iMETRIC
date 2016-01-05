@@ -5,24 +5,21 @@ import pandas as pd
 from collections import defaultdict
 import tempfile
 
-def create_temp_fasta(sequences, tempdir):
+def create_temp_fasta(sequences, tempdir=None):
     if isinstance(sequences, str):
         sequences=[sequences]
-
-    tempfile = tempfile.mkstemp(dir=tempdir)
-    
-    with open(tempfile, "wb") as out:
+    temp = tempfile.mkstemp(dir=tempdir)[1]
+    with open(temp, "w") as out:
         for i, seq in enumerate(sequences):
             SeqIO.write(
                 SeqRecord(Seq(seq), id='temp{}'.format(i)), 
                 out, 'fasta')
-    
-    return tempfile
+    return temp
 
 def sort_by_length(seq):
     d = defaultdict(lambda: [])
     for s in seq:
-        d[len(seq)].append(seq)
+        d[len(s)].append(s)
     return d
 
 def rbind(dfs):

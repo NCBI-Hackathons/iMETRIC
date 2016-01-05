@@ -29,7 +29,7 @@ class MHCPeptidePredictor(object):
         self.max_peptide_length = 15
         self.init(**kwargs)
     
-    def predictPeptides(self, sequences, alleles=None, species=None, **kwarg):
+    def predictPeptides(self, sequences, alleles=None, species=None, **kwargs):
         """Predict binding between one or more peptide and one or more MHC alleles.
         
         Args:
@@ -84,13 +84,13 @@ class MHCPeptidePredictor(object):
         self.getProteinPredictions(sequences, lengths, alleles, species, **kwargs)
     
     def _validate_args(self, sequences, alleles, species, min_seq_len=None, max_seq_len=None):
-        if sequences is None or len(sequences == 0):
+        if sequences is None or len(sequences) == 0:
             raise Exception("No sequences given")
         if isinstance(sequences, str):
             sequences = [sequences]
         for seq in sequences:
             if ((min_seq_len is None or len(seq) < min_seq_len) and
-                    (max_seq_len is Noen or len(seq) > max_seq_len)):
+                    (max_seq_len is None or len(seq) > max_seq_len)):
                 raise Exception("Sequence length must be between {0} and {1}".format(
                     min_seq_len or 0, max_seq_len or "Inf"))
         
@@ -103,7 +103,7 @@ class MHCPeptidePredictor(object):
             species = self.getAllSpecies()
         elif isinstance(species, str):
             species = [species]
-        
+
         return (sequences, alleles, species)
     
     def getAllMHCAlleles(self):
@@ -133,10 +133,10 @@ class MHCPeptidePredictor(object):
     def init(self, **kwargs):
         pass
     
-    def getPeptidePredictions(sequences, alleles, species, **kwargs):
+    def getPeptidePredictions(self, sequences, alleles, species, **kwargs):
         raise NotImplemented()
     
-    def getProteinPredictions(sequences, lengths, alleles, species, **kwargs):
+    def getProteinPredictions(self, sequences, lengths, alleles, species, **kwargs):
         raise NotImplemented()
     
     def listMHCAlleles(self):
