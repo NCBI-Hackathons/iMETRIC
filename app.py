@@ -122,16 +122,31 @@ def get_netmhcpan(protein_sequence, alleles="HLA-A01:01"):
 
 
 def get_results(protein_sequence):
-    """ Query Results from iMetricAPI
+		""" Query Results from iMetricAPI
 
-    Note: querying directy from iedb for initial devel
+		Note: querying directy from iedb for initial devel
 
-    """
-    iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
-    iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
-    # netmhcpan_response =
+		"""
+		iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
+		iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
+		# netmhcpan_response = 
+		raw_results = {
+			protein_sequence: {
+				'iedb_mhci': iedb_mhci_response,
+				'iedb_mhcii': iedb_mhcii_response,
+			}
+		}
 
-    return { protein_sequence: { 'iedb_mhci': iedb_mhci_response,'iedb_mhcii': iedb_mhcii_response} }
+		procd = procRequest(raw_results)
+		merged_table = genMergedTable(procd) 
+		procd.append({'results_table': merged_table})
+		results = {}
+		for dic in procd: 
+			dic = dic.items()[0]
+			result = {dic[0] : dic[1].to_json()}
+			results[dic[0]] = dic[1].to_json()
+		return {protein_sequence: results}
+
 
 def procRequest(j):
     h = j[j.keys()[0]]
@@ -144,7 +159,7 @@ def procRequest(j):
                 df = df.rename(columns={c: str(e[1][0]) + c})
         l[e[0]] = {e[1][0]: df}
     print 'returning list from procRequest'
-    print l
+    print l 
     return(l)
 
 
@@ -157,6 +172,7 @@ def genMergedTable(l):
     print 'returning merged table from genMergedTable'
     print df
     return df
+
 
 
 # API RESOURCES BELOW
