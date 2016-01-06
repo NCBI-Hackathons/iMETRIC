@@ -44,7 +44,6 @@ from sqlalchemy.dialects.postgresql import JSON, JSONB, ARRAY, BIT, VARCHAR, INT
 from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from mhcpredict import predict
 
 app = Flask(__name__)
 api = Api(app)
@@ -93,7 +92,7 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 	if response.ok:
 		return response.text
 	else:
-		return 'Something went wrong'
+		return 'ERROR'
 
 
 # DATA-PROCESSING FUNCTIONS

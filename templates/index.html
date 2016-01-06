@@ -8,6 +8,12 @@ jQuery(document).ready(function() {
   // Instantiate a slider
   var mySlider = $("input.slider").slider();
 
+  mySlider.slider('max', 15);
+
+  $("input.slider").on("slideStop", function(){
+    alert("slider changed");
+  });
+
   $('#submit-button').click(function() {
     $('#submit-button').prop("disabled",true);
     $('.sk-fading-circle').show();
@@ -87,9 +93,10 @@ jQuery(document).ready(function() {
   <div class="panel panel-primary">
     <div class="panel-heading">Output</div>
     <br>
-    <div class="container" style="text-align:center;">
-      <input class="slider"></input>
+    <div class="text-center">
+      <input class="slider" data-slider-id='slider' type="text" data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="500"/>
     </div>
+    <h4 class="text-center">IC50 Threshold</h4>
     <div class="panel-body">
     </div>
   </div>
