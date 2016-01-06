@@ -10,10 +10,6 @@ jQuery(document).ready(function() {
 
   mySlider.slider('max', 15);
 
-  $("input.slider").slideStop(function() {
-    alert('slider clicked');
-  });
-
   $('#submit-button').click(function() {
     $('#submit-button').prop("disabled",true);
     $('.sk-fading-circle').show();
