@@ -131,10 +131,7 @@ def get_results(protein_sequence):
     iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
     # netmhcpan_response =
 
-    return protein_sequence: {
-            'iedb_mhci': iedb_mhci_response,
-            'iedb_mhcii': iedb_mhcii_response,
-        }
+    return { protein_sequence: { 'iedb_mhci': iedb_mhci_response,'iedb_mhcii': iedb_mhcii_response} }
 
 def procRequest(j):
     h = j[j.keys()[0]]
