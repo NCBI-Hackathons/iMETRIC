@@ -93,21 +93,76 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 		return 'Something went wrong'
 
 
+def get_results(protein_sequence):
+    """ Query Results from iMetricAPI
+
+    Note: querying directy from iedb for initial devel
+
+    """
+    iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
+    iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
+
+    return {protein_sequence: {
+    'iedb_mhci': iedb_mhci_response,
+    'iedb_mhcii': iedb_mhcii_response,
+    }
+    }
 
 
 # API RESOURCES BELOW
 
 class ProteinQuery(Resource):
     def get(self, protein_sequence):
-			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
-			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
-			return {protein_sequence: {
-			'iedb_mhci': iedb_mhci_response,
-			'iedb_mhcii': iedb_mhcii_response,
-			}
-			}
+        return get_results(protein_sequence)
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
+
+class CSVQuery(Resource):
+    def get(self, protein_sequence):
+        results = get_results(protein_sequence)
+        # munge this data!
+        response = make_response(str(results))
+        response.headers["Content-Disposition"] = "attachment; filename=results.csv"
+        return response
+api.add_resource(CSVQuery, '/csv/<string:protein_sequence>')
+
+
+class UIProteinQuery(Resource):
+    def get(self, protein_sequence):
+        results = get_results(protein_sequence)[protein_sequence]
+        html = ''
+        for key in results:
+            print key
+            html += """<h2 class="text-center">{}</h2>
+            <table class="table">
+            """.format(key)
+            ic50_col_num = None
+            for i, row in enumerate(results[key].split('\n')):
+                data = row.split('\t')
+                print data
+
+                html += '<tr>'
+
+                for col_num, datum in enumerate(data):
+                    if i == 0:
+                        if datum == 'ic50':
+                            ic50_col_num = col_num
+
+                        html += '<th>{}</th>\n'.format(datum)
+                    else:
+                        if ic50_col_num and col_num == ic50_col_num:
+                            html += '<td id="ic50">{}</td>\n'.format(datum)
+                        else:
+                            html += '<td>{}</td>\n'.format(datum)
+
+                html += '<tr>'
+            html += """</table>
+            """
+
+        return html
+
+api.add_resource(UIProteinQuery, '/uiquery/<string:protein_sequence>')
+
 
 
 if __name__ == '__main__':

@@ -8,8 +8,6 @@ jQuery(document).ready(function() {
   // Instantiate a slider
   var mySlider = $("input.slider").slider();
 
-  mySlider.slider('max', 15);
-
   $("input.slider").on("slideStop", function(){
     alert("slider changed");
   });
@@ -19,19 +17,19 @@ jQuery(document).ready(function() {
     $('.sk-fading-circle').show();
     $('#results').hide();
     $('.panel-body').contents().remove();
-    var url = 'query/';
+    var url = 'uiquery/';
     url += $('textarea#sequence').val();
     //alert(url)
-    jQuery.getJSON(url, {}, function(data) {
-      results = data[$('textarea#sequence').val()];
-      $('.panel-body').append('<h3>iedb_mhci</h3>');
-      $('.panel-body').append(results['iedb_mhci']);
-      $('.panel-body').append('<h3>iedb_mhcii</h3>');
-      $('.panel-body').append(results['iedb_mhcii']);
+    jQuery.get(url, {}, function(data) {
+      $('.panel-body').append(data);
+      //$('.panel-body').append('<h3>iedb_mhcii</h3>');
+      //$('.panel-body').append(results['iedb_mhcii']);
       //alert(results['iedb_mhci']);
 
       //alert( obj.name === $('textarea#sequence').val() );
       //alert(data[$('textarea#sequence').val()]);
+      //$('#ic50').css("color", "red")​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​;
+      //$("p").css("background-color", "yellow");
       $('#submit-button').prop("disabled",false);
       $('.sk-fading-circle').hide();
       $('#results').fadeIn();
@@ -40,6 +38,12 @@ jQuery(document).ready(function() {
 
   $('#test-data-button').click(function() {
     $('textarea#sequence').val('MAAAGSRKRRLAELTVDEFLASGFDSESESESENSPQAETREAREAARSPDKPGGSPSAS');
+  });
+
+  $('#csv-button').click(function() {
+    var url = 'csv/';
+    url += $('textarea#sequence').val();
+    window.location = url;
   });
 
   $('.sk-fading-circle').hide();
@@ -91,12 +95,20 @@ jQuery(document).ready(function() {
 <!-- Output -->
 <div class="container" id="results">
   <div class="panel panel-primary">
-    <div class="panel-heading">Output</div>
+    <div class="panel-heading">
+      <div class="btn-group pull-right">
+        <button class="btn btn-warning btn-xs" id="csv-button" type="button">
+          <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+          Export
+        </button>
+      </div>
+      <h3class="panel-title">Output</h3>
+    </div>
     <br>
     <div class="text-center">
       <input class="slider" data-slider-id='slider' type="text" data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="500"/>
     </div>
-    <h4 class="text-center">IC50 Threshold</h4>
+    <h5 class="text-center">IC50 Threshold</h5>
     <div class="panel-body">
     </div>
   </div>
