@@ -189,7 +189,7 @@ class CSVQuery(Resource):
         results = get_results(protein_sequence)
         # munge this data!
         response = make_response(str(results))
-        response.headers["Content-Disposition"] = "attachment; filename=results.csv"
+        response.headers["Content-Disposition"] = "attachment; filename=results.json"
         return response
 api.add_resource(CSVQuery, '/csv/<string:protein_sequence>')
 
