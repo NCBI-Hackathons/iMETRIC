@@ -15,6 +15,8 @@ from celery import Celery
 from collections import defaultdict, OrderedDict
 import collections
 import requests
+import io
+import pandas as pd
 #Flask Imports
 from werkzeug import secure_filename
 from flask import Flask, Blueprint, make_response, render_template, render_template_string, request, session, flash, redirect, url_for, jsonify, get_flashed_messages, send_from_directory
@@ -42,6 +44,9 @@ from sqlalchemy.dialects.postgresql import JSON, JSONB, ARRAY, BIT, VARCHAR, INT
 from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+
+import imetricapi
+from imetricapi import predict
 
 app = Flask(__name__)
 api = Api(app)
@@ -73,6 +78,8 @@ def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*
 	url = 'http://tools-api.iedb.org/tools_api/mhci/'
 	response = requests.post(url, data=data)
 	if response.ok:
+		print 'got a response from iedb_mhcI'
+		print response.text
 		return response.text
 	else:
 		return 'Something went wrong'
@@ -88,9 +95,30 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 	url = 'http://tools-api.iedb.org/tools_api/mhcii/'
 	response = requests.post(url, data=data)
 	if response.ok:
+		print 'got a response from iedb mhcII'
+		print response.text
 		return response.text
 	else:
-		return 'Something went wrong'
+		return 'ERROR'
+
+
+import imetricapi.predict
+import imetricapi.util
+
+def get_netmhcpan(protein_sequence, alleles="HLA-A01:01"):
+	result = imetricapi.predict.predictPeptides(
+		"VIFRLMRTNFL",
+		alleles=alleles,
+		methods=["NetMHCpan"],
+		config=imetricapi.util.DictConfig(dict(NetMHCpan=dict(
+			executable="/home/ubuntu/software/netMHCpan-2.8/Linux_x86_64/bin/netMHCpan",
+			tempdir="/home/ubuntu/software/Epitopes_from_TCRs/mhcpredict"))
+		)
+	)
+
+
+
+# DATA-PROCESSING FUNCTIONS
 
 
 def get_results(protein_sequence):
@@ -101,12 +129,37 @@ def get_results(protein_sequence):
     """
     iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
     iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
+    # netmhcpan_response =
 
-    return {protein_sequence: {
-    'iedb_mhci': iedb_mhci_response,
-    'iedb_mhcii': iedb_mhcii_response,
-    }
-    }
+    return protein_sequence: {
+            'iedb_mhci': iedb_mhci_response,
+            'iedb_mhcii': iedb_mhcii_response,
+        }
+
+def procRequest(j):
+    h = j[j.keys()[0]]
+    l = list(e[0] for e in enumerate(h.items()))
+    for e in enumerate(h.items()):
+        o = io.StringIO(e[1][1])
+        df = pd.read_csv(o, sep='\t')
+        for c in df.columns:
+            if c not in ['allele','peptide']:
+                df = df.rename(columns={c: str(e[1][0]) + c})
+        l[e[0]] = {e[1][0]: df}
+    print 'returning list from procRequest'
+    print l
+    return(l)
+
+
+def genMergedTable(l):
+    for e in enumerate(l):
+        if e[0] == 0:
+            df = l[e[0]].values()[0]
+        else:
+            df = pd.merge(df, l[e[0]].values()[0], on=['peptide', 'allele'], how='outer')
+    print 'returning merged table from genMergedTable'
+    print df
+    return df
 
 
 # API RESOURCES BELOW
@@ -114,6 +167,7 @@ def get_results(protein_sequence):
 class ProteinQuery(Resource):
     def get(self, protein_sequence):
         return get_results(protein_sequence)
+
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
