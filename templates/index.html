@@ -8,10 +8,6 @@ jQuery(document).ready(function() {
   // Instantiate a slider
   var mySlider = $("input.slider").slider();
 
-  $("input.slider").on("slideStop", function(){
-    alert("slider changed");
-  });
-
   $('#submit-button').click(function() {
     $('#submit-button').prop("disabled",true);
     $('.sk-fading-circle').show();
@@ -28,12 +24,19 @@ jQuery(document).ready(function() {
 
       //alert( obj.name === $('textarea#sequence').val() );
       //alert(data[$('textarea#sequence').val()]);
+      $("[id=ic50-immun]").css({"backgroundColor": "maroon", "color": "white"});
+      $("[id=ic50-safe]").css({"backgroundColor": "green", "color": "white"});
       //$('#ic50').css("color", "red")​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​;
       //$("p").css("background-color", "yellow");
       $('#submit-button').prop("disabled",false);
       $('.sk-fading-circle').hide();
       $('#results').fadeIn();
     });
+  });
+
+  $("input.slider").on("slideStop", function(){
+    alert("slider changed");
+
   });
 
   $('#test-data-button').click(function() {

@@ -202,7 +202,10 @@ class UIProteinQuery(Resource):
                         html += '<th>{}</th>\n'.format(datum)
                     else:
                         if ic50_col_num and col_num == ic50_col_num:
-                            html += '<td id="ic50">{}</td>\n'.format(datum)
+                            if float(datum) >= 500:
+                                html += '<td id="ic50-safe">{}</td>\n'.format(datum)
+                            else:
+                                html += '<td id="ic50-immun">{}</td>\n'.format(datum)
                         else:
                             html += '<td>{}</td>\n'.format(datum)
 
