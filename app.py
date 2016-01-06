@@ -129,7 +129,7 @@ def get_results(protein_sequence):
 		"""
 		iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
 		iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
-		# netmhcpan_response = 
+		# netmhcpan_response =
 		raw_results = {
 			protein_sequence: {
 				'iedb_mhci': iedb_mhci_response,
@@ -138,10 +138,10 @@ def get_results(protein_sequence):
 		}
 
 		procd = procRequest(raw_results)
-		merged_table = genMergedTable(procd) 
+		merged_table = genMergedTable(procd)
 		procd.append({'results_table': merged_table})
 		results = {}
-		for dic in procd: 
+		for dic in procd:
 			dic = dic.items()[0]
 			result = {dic[0] : dic[1].to_json()}
 			results[dic[0]] = dic[1].to_json()
@@ -159,7 +159,7 @@ def procRequest(j):
                 df = df.rename(columns={c: str(e[1][0]) + c})
         l[e[0]] = {e[1][0]: df}
     print 'returning list from procRequest'
-    print l 
+    print l
     return(l)
 
 
@@ -198,38 +198,43 @@ class UIProteinQuery(Resource):
     def get(self, protein_sequence):
         results = get_results(protein_sequence)[protein_sequence]
         html = ''
-        for key in results:
-            print key
-            html += """<h2 class="text-center">{}</h2>
+        for tool_key in results:
+            tool_results = pd.read_json(results[tool_key])
+
+            html += """<div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="text-center">{}</h2>
+            </div>
+            <div class="panel-body" style="overflow:auto;">
             <table class="table">
-            """.format(key)
-            ic50_col_num = None
-            for i, row in enumerate(results[key].split('\n')):
-                data = row.split('\t')
-                print data
+            """.format(tool_key)
+
+            i = 0
+            for row in tool_results.iterrows():
+                if i == 0:
+                    print tool_results.keys()
+                    for header in tool_results.keys():
+                        html += '<th>{}</th>\n'.format(header)
+                    i += 1
 
                 html += '<tr>'
-
-                for col_num, datum in enumerate(data):
-                    if i == 0:
-                        if datum == 'ic50':
-                            ic50_col_num = col_num
-
-                        html += '<th>{}</th>\n'.format(datum)
-                    else:
-                        if ic50_col_num and col_num == ic50_col_num:
-                            if float(datum) >= 500:
-                                html += '<td id="ic50-safe">{}</td>\n'.format(datum)
+                for col_num, data in enumerate(row):
+                    if col_num != 0:
+                        for datum in data:
+                            if False: # if it's of ic50 type
+                                if float(datum) >= 500:
+                                    html += '<td id="ic50-safe">{}</td>\n'.format(datum)
+                                else:
+                                    html += '<td id="ic50-immun">{}</td>\n'.format(datum)
                             else:
-                                html += '<td id="ic50-immun">{}</td>\n'.format(datum)
-                        else:
-                            html += '<td>{}</td>\n'.format(datum)
+                                html += '<td>{}</td>\n'.format(datum)
 
                 html += '<tr>'
-            html += """</table>
+            html += """</table></div>
             """
 
         return html
+
 
 api.add_resource(UIProteinQuery, '/uiquery/<string:protein_sequence>')
 
