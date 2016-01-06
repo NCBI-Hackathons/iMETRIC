@@ -15,6 +15,8 @@ from celery import Celery
 from collections import defaultdict, OrderedDict
 import collections
 import requests
+import io
+import pandas as pd
 #Flask Imports
 from werkzeug import secure_filename
 from flask import Flask, Blueprint, make_response, render_template, render_template_string, request, session, flash, redirect, url_for, jsonify, get_flashed_messages, send_from_directory
@@ -94,7 +96,29 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 		return 'Something went wrong'
 
 
+# DATA-PROCESSING FUNCTIONS
 
+def procRequest(request):
+    j = json.loads(request.text)
+    h = j[j.keys()[0]]
+    l = list(e[0] for e in enumerate(h.items()))
+    for e in enumerate(h.items()):
+        o = io.StringIO(e[1][1])
+        df = pd.read_csv(o, sep='\t')
+        for c in df.columns:
+            if c not in ['allele','peptide']:
+                df = df.rename(columns={c: str(e[1][0]) + c})
+        l[e[0]] = {e[1][0]: df}
+    return(l)
+	
+
+def genMergedTable(l):
+    for e in enumerate(l):
+        if e[0] == 0:
+            df = l[e[0]].values()[0]
+        else:
+            df = pd.merge(df, l[e[0]].values()[0], on=['peptide', 'allele'], how='outer')
+    return(df.to_json)
 
 # API RESOURCES BELOW
 
