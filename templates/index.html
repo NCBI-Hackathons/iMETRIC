@@ -19,6 +19,7 @@ jQuery(document).ready(function() {
     jQuery.getJSON(url, {}, function(data) {
       results = data[$('textarea#sequence').val()];
       $('.panel-body').append(results['iedb_mhci']);
+      $('.panel-body').append(results['iedb_mhcii']);
       //alert(results['iedb_mhci']);
 
       //alert( obj.name === $('textarea#sequence').val() );
