@@ -90,7 +90,7 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 	if response.ok:
 		return response.text
 	else:
-		return 'Something went wrong'
+		return 'ERROR'
 
 
 
