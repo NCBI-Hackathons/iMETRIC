@@ -42,7 +42,6 @@ from sqlalchemy.dialects.postgresql import JSON, JSONB, ARRAY, BIT, VARCHAR, INT
 from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from mhcpredict import predict
 
 app = Flask(__name__)
 api = Api(app)
