@@ -45,6 +45,9 @@ from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
+import imetricapi 
+from imetricapi import predict 
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -75,6 +78,8 @@ def post_to_iedb_mhci(protein_sequence, method='smm', length='9', allele='HLA-A*
 	url = 'http://tools-api.iedb.org/tools_api/mhci/'
 	response = requests.post(url, data=data)
 	if response.ok:
+		print 'got a response from iedb_mhcI'
+		print response.text 
 		return response.text
 	else:
 		return 'Something went wrong'
@@ -90,15 +95,32 @@ def post_to_iedb_mhcii(protein_sequence, method='nn_align', length='9', allele='
 	url = 'http://tools-api.iedb.org/tools_api/mhcii/'
 	response = requests.post(url, data=data)
 	if response.ok:
+		print 'got a response from iedb mhcII'
+		print response.text 
 		return response.text
 	else:
 		return 'ERROR'
 
 
+import imetricapi.predict
+import imetricapi.util    
+
+def get_netmhcpan(protein_sequence, alleles="HLA-A01:01"):
+	result = imetricapi.predict.predictPeptides(
+		"VIFRLMRTNFL",
+		alleles=alleles,
+		methods=["NetMHCpan"],
+		config=imetricapi.util.DictConfig(dict(NetMHCpan=dict(
+			executable="/home/ubuntu/software/netMHCpan-2.8/Linux_x86_64/bin/netMHCpan",
+			tempdir="/home/ubuntu/software/Epitopes_from_TCRs/mhcpredict"))
+		)
+	)
+
+
+
 # DATA-PROCESSING FUNCTIONS
 
-def procRequest(request):
-    j = json.loads(request.text)
+def procRequest(j):
     h = j[j.keys()[0]]
     l = list(e[0] for e in enumerate(h.items()))
     for e in enumerate(h.items()):
@@ -108,8 +130,10 @@ def procRequest(request):
             if c not in ['allele','peptide']:
                 df = df.rename(columns={c: str(e[1][0]) + c})
         l[e[0]] = {e[1][0]: df}
+    print 'returning list from procRequest'
+    print l 
     return(l)
-	
+
 
 def genMergedTable(l):
     for e in enumerate(l):
@@ -117,7 +141,10 @@ def genMergedTable(l):
             df = l[e[0]].values()[0]
         else:
             df = pd.merge(df, l[e[0]].values()[0], on=['peptide', 'allele'], how='outer')
-    return(df.to_json)
+    print 'returning merged table from genMergedTable'
+    print df
+    return df
+
 
 # API RESOURCES BELOW
 
@@ -125,11 +152,25 @@ class ProteinQuery(Resource):
     def get(self, protein_sequence):
 			iedb_mhci_response = post_to_iedb_mhci(protein_sequence)
 			iedb_mhcii_response = post_to_iedb_mhcii(protein_sequence)
-			return {protein_sequence: {
-			'iedb_mhci': iedb_mhci_response,
-			'iedb_mhcii': iedb_mhcii_response,
+			# netmhcpan_response = 
+
+			raw_results = {
+				protein_sequence: {
+					'iedb_mhci': iedb_mhci_response,
+					'iedb_mhcii': iedb_mhcii_response,
+				}
 			}
-			}
+
+			procd = procRequest(raw_results)
+			merged_table = genMergedTable(procd) 
+			procd.append({'results_table': merged_table})
+			results = {}
+			for dic in procd: 
+				dic = dic.items()[0]
+				result = {dic[0] : dic[1].to_json()}
+				results[dic[0]] = dic[1].to_json()
+			return {protein_sequence: results}
+
 
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
