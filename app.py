@@ -198,24 +198,27 @@ class UIProteinQuery(Resource):
     def get(self, protein_sequence):
         results = get_results(protein_sequence)[protein_sequence]
         html = ''
-        for tool_key in results:
+        ci = ['One','Two','Three'] # collapse identifiers
+        for i, tool_key in enumerate(results):
             tool_results = pd.read_json(results[tool_key])
 
-            html += """<div class="panel panel-primary">
-            <div class="panel-heading">
-                <h2 class="text-center">{}</h2>
+            html += """<br><div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="heading{}">
+                <h4 style="text-align:center">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{}" aria-expanded="true" aria-controls="collapse{}">
+                    {}
+                </h4>
             </div>
-            <div class="panel-body" style="overflow:auto;">
-            <table class="table">
-            """.format(tool_key)
+            <div id="collapse{}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{}">
+                <div class="panel-body" style="overflow:auto;">
+                    <table class="table">
+            """.format(ci[i], ci[i], ci[i], tool_key, ci[i], ci[i], ci[i])
 
-            i = 0
-            for row in tool_results.iterrows():
-                if i == 0:
+            for j, row in enumerate(tool_results.iterrows()):
+                if j == 0:
                     print tool_results.keys()
                     for header in tool_results.keys():
                         html += '<th>{}</th>\n'.format(header)
-                    i += 1
 
                 html += '<tr>'
                 for col_num, data in enumerate(row):
@@ -230,7 +233,10 @@ class UIProteinQuery(Resource):
                                 html += '<td>{}</td>\n'.format(datum)
 
                 html += '<tr>'
-            html += """</table></div>
+            html += """</table>
+                    </div>
+                </div>
+            </div>
             """
 
         return html

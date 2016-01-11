@@ -12,15 +12,18 @@ jQuery(document).ready(function() {
     $('#submit-button').prop("disabled",true);
     $('.sk-fading-circle').show();
     $('#results').hide();
-    $('.panel-body').contents().remove();
+    $('.panel-group').contents().remove();
     var url = 'uiquery/';
     url += $('textarea#sequence').val();
     //alert(url)
     jQuery.get(url, {}, function(data) {
-      $('.panel-body').append(data);
+      $('.panel-group').append(data);
       //$('.panel-body').append('<h3>iedb_mhcii</h3>');
       //$('.panel-body').append(results['iedb_mhcii']);
       //alert(results['iedb_mhci']);
+      $('#collapseOne').collapse("hide");
+      $('#collapseTwo').collapse("hide");
+      $('#collapseThree').collapse("hide");
 
       //alert( obj.name === $('textarea#sequence').val() );
       //alert(data[$('textarea#sequence').val()]);
@@ -97,22 +100,12 @@ jQuery(document).ready(function() {
 </div>
 <!-- Output -->
 <div class="container" id="results">
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <div class="btn-group pull-right">
-        <button class="btn btn-warning btn-xs" id="csv-button" type="button">
-          <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
-          Export
-        </button>
-      </div>
-      <h3class="panel-title">Output</h3>
-    </div>
     <br>
     <div class="text-center">
       <input class="slider" data-slider-id='slider' type="text" data-slider-min="0" data-slider-max="1000" data-slider-step="1" data-slider-value="500"/>
     </div>
     <h5 class="text-center">IC50 Threshold</h5>
-    <div class="panel-body">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     </div>
   </div>
 </div>
