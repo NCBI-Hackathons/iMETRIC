@@ -181,7 +181,6 @@ class ProteinQuery(Resource):
     def get(self, protein_sequence):
         return get_results(protein_sequence)
 
-
 api.add_resource(ProteinQuery, '/query/<string:protein_sequence>')
 
 class CSVQuery(Resource):
@@ -191,6 +190,8 @@ class CSVQuery(Resource):
         response = make_response(str(results))
         response.headers["Content-Disposition"] = "attachment; filename=results.json"
         return response
+
+
 api.add_resource(CSVQuery, '/csv/<string:protein_sequence>')
 
 
@@ -213,37 +214,35 @@ class UIProteinQuery(Resource):
                 <div class="panel-body" style="overflow:auto;">
                     <table class="table">
             """.format(ci[i], ci[i], ci[i], tool_key, ci[i], ci[i], ci[i])
-
+            ic50_col = []
             for j, row in enumerate(tool_results.iterrows()):
                 if j == 0:
                     print tool_results.keys()
-                    for header in tool_results.keys():
+                    for col, header in enumerate(tool_results.keys()):
+                        if 'ic50' in header:
+                            ic50_col.append(col)
                         html += '<th>{}</th>\n'.format(header)
-
                 html += '<tr>'
                 for col_num, data in enumerate(row):
                     if col_num != 0:
-                        for datum in data:
-                            if False: # if it's of ic50 type
+                        for dat_num, datum in enumerate(data):
+                            if dat_num in ic50_col: # if it's of ic50 type
                                 if float(datum) >= 500:
                                     html += '<td id="ic50-safe">{}</td>\n'.format(datum)
                                 else:
                                     html += '<td id="ic50-immun">{}</td>\n'.format(datum)
                             else:
                                 html += '<td>{}</td>\n'.format(datum)
-
                 html += '<tr>'
             html += """</table>
                     </div>
                 </div>
             </div>
             """
-
         return html
 
 
 api.add_resource(UIProteinQuery, '/uiquery/<string:protein_sequence>')
-
 
 
 if __name__ == '__main__':
