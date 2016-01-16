@@ -228,9 +228,9 @@ class UIProteinQuery(Resource):
                         for dat_num, datum in enumerate(data):
                             if dat_num in ic50_col: # if it's of ic50 type
                                 if float(datum) >= 500:
-                                    html += '<td id="ic50-safe">{}</td>\n'.format(datum)
+                                    html += '<td class="ic50-val" id="ic50-safe">{}</td>\n'.format(datum)
                                 else:
-                                    html += '<td id="ic50-immun">{}</td>\n'.format(datum)
+                                    html += '<td class="ic50-val" id="ic50-immun">{}</td>\n'.format(datum)
                             else:
                                 html += '<td>{}</td>\n'.format(datum)
                 html += '<tr>'

@@ -15,22 +15,18 @@ jQuery(document).ready(function() {
     $('.panel-group').contents().remove();
     var url = 'uiquery/';
     url += $('textarea#sequence').val();
-    //alert(url)
+
     jQuery.get(url, {}, function(data) {
       $('.panel-group').append(data);
-      //$('.panel-body').append('<h3>iedb_mhcii</h3>');
-      //$('.panel-body').append(results['iedb_mhcii']);
-      //alert(results['iedb_mhci']);
+
       $('#collapseOne').collapse("hide");
       $('#collapseTwo').collapse("hide");
       $('#collapseThree').collapse("hide");
 
-      //alert( obj.name === $('textarea#sequence').val() );
-      //alert(data[$('textarea#sequence').val()]);
+      // initial color settings
       $("[id=ic50-immun]").css({"backgroundColor": "maroon", "color": "white"});
       $("[id=ic50-safe]").css({"backgroundColor": "green", "color": "white"});
-      //$('#ic50').css("color", "red")​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​;
-      //$("p").css("background-color", "yellow");
+
       $('#submit-button').prop("disabled",false);
       $('.sk-fading-circle').hide();
       $('#results').fadeIn();
@@ -38,8 +34,10 @@ jQuery(document).ready(function() {
   });
 
   $("input.slider").on("slideStop", function(){
-    alert("slider changed");
-
+    // update color settings based on threshold
+    var threshold = parseFloat($("input.slider").val());
+    $('[class=ic50-val]').filter(function(){ return parseFloat($(this).html()) < threshold }).css({"backgroundColor": "maroon", "color": "white"});
+    $('[class=ic50-val]').filter(function(){ return parseFloat($(this).html()) > threshold }).css({"backgroundColor": "green", "color": "white"});
   });
 
   $('#test-data-button').click(function() {
