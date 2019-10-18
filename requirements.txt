@@ -57,7 +57,7 @@ requests==2.9.1
 six==1.10.0
 SQLAlchemy==1.0.11
 static==1.1.1
-urllib3==1.14
+urllib3==1.24.2
 urlparse3==1.0.3
 visitor==0.1.2
 Werkzeug==0.11.3
