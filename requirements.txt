@@ -12,7 +12,7 @@ biopython==1.66
 blinker==1.4
 celery==3.1.19
 cffi==1.4.2
-cryptography==1.1.2
+cryptography==3.2
 dominate==2.1.16
 enum34==1.1.2
 Flask==0.10.1
