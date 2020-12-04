@@ -40,7 +40,7 @@ kombu==3.0.32
 Mako==1.0.3
 MarkupSafe==0.23
 numpy==1.10.2
-oic==0.7.7
+oic==1.2.1
 pandas==0.17.1
 psycopg2==2.6.1
 pyasn1==0.1.9
