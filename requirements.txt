@@ -39,7 +39,7 @@ Jinja2==2.8
 kombu==3.0.32
 Mako==1.0.3
 MarkupSafe==0.23
-numpy==1.10.2
+numpy==1.21.0
 oic==0.7.7
 pandas==0.17.1
 psycopg2==2.6.1
