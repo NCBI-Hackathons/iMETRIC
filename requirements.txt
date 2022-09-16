@@ -37,7 +37,7 @@ ipaddress==1.0.16
 itsdangerous==0.24
 Jinja2==2.8
 kombu==3.0.32
-Mako==1.0.3
+Mako==1.2.2
 MarkupSafe==0.23
 numpy==1.10.2
 oic==0.7.7
